@@ -6,6 +6,8 @@ use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -30,8 +32,6 @@ class TaskController extends Controller
             $query->where('status',$request->status);
        }
           
-       
-
        $tasks = $query->latest()->paginate(10)->withQueryString();
        return Inertia('Task',[
         'tasks' => TaskResource::collection($tasks),
@@ -56,7 +56,9 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $task = Task::create($validated);
+        return redirect()->route('addTask.show')->with('success','Task created successfully');
     }
 
     /**
@@ -64,7 +66,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
+       
     }
 
     /**
@@ -89,5 +91,12 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         //
+    }
+
+    public function addTaskShow(){
+        return Inertia('AddTask',[
+            "projects" => Project::all(),
+            'users' => User::all()
+        ]);
     }
 }

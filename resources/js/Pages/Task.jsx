@@ -9,7 +9,7 @@ export default function Tasks({ tasks }) {
     <AuthenticatedLayout>
       <Head title="Tasks" />
       <NavBar children={<Link
-                href="/tasks/create"
+                href={route('addTask.show')}
                 className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
               >
                 <PlusCircle size={16} className="mr-1" />
