@@ -12,9 +12,7 @@ export default function AddTask({ projects, users }) {
     due_date: "",
   });
 
-
-  
-  const handleSubmit = (e) => {
+const handleSubmit = (e) => {
     e.preventDefault();
     post(route("tasks.store"), {
       onSuccess: () => reset(),

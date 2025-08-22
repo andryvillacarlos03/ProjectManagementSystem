@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('owner_id'); // user who created the project
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
             $table->timestamps();
-         $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

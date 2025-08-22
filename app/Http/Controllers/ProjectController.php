@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
+use App\Models\User;
 
 class ProjectController extends Controller
 {
@@ -34,7 +35,9 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $projects = Project::create($validated);
+        return redirect()->route('project.so')->with('success','Project Successfully added');
     }
 
     /**
@@ -67,5 +70,11 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         //
+    }
+
+    public function projectShow(){
+        return inertia('AddProject',[
+            'users' => User::all(),
+        ]);
     }
 }
