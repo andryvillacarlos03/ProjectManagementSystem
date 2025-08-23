@@ -14,7 +14,7 @@ export default function Tasks({ tasks }) {
               >
                 <PlusCircle size={16} className="mr-1" />
                 Add Task
-              </Link>}/>
+              </Link>} routeName="tasks.index"/>
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-4">Tasks</h2>
 

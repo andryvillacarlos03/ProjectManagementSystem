@@ -7,26 +7,54 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        
+  public function index(Request $request)
+ {
+    $query = Project::query();
+
+    if ($request->filled('search')) {
+        $search = $request->input('search');
+
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+              ->orWhereHas('owner', function ($owner) use ($search) {
+                  $owner->where('name', 'like', "%{$search}%"); // search user name
+              });
+        });
     }
+
+    if($request->filled('status') && $request->status !== 'All'){
+        $query->where('status',$request->status);
+    }
+    
+    $projects = $query->with('owner')
+                      ->latest()
+                      ->paginate(10)
+                      ->withQueryString();
+
+    return Inertia('Project', [
+        'projects' => ProjectResource::collection($projects),
+        'filters'  => $request->only(['search','status']),
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     { 
-      $projects = Project::query()->paginate(10);
+      $projects = Project::query()->with('owner')->paginate(10);
 
       return inertia('Project',[
-        'projects' => ProjectResource::collection($projects),
+        'projects' => ProjectResource::collection($projects)->response()->getData(true),
       ]);
     }
 

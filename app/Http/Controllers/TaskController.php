@@ -15,7 +15,7 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+public function index(Request $request)
     {
        $query = Task::query();
 
@@ -28,8 +28,7 @@ class TaskController extends Controller
        }
 
       if($request->filled('status') && $request->status !== 'All'){
-          
-            $query->where('status',$request->status);
+          $query->where('status',$request->status);
        }
           
        $tasks = $query->latest()->paginate(10)->withQueryString();

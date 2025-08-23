@@ -18,7 +18,10 @@ class ProjectResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "owner_id" => $this->owner_id,
+            "owner" => [
+                "id" => $this->owner_id,
+                "name" => $this->owner->name,
+            ],
             "status" => $this->status
         ];
     }

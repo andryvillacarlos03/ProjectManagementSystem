@@ -20,10 +20,10 @@ Route::get('/', function(){
     return redirect()->route('login');
 });
 
-
 Route::middleware(['auth','verified'])->group(function(){
   Route::get('dashboard',  fn()=>inertia('Dashboard'))->name('dashboard');
-  Route::get('project',[ProjectController::class,'create'])->name('project.create');
+  Route::get('project/create',[ProjectController::class,'create'])->name('project.create');
+  Route::get('project',[ProjectController::class,'index'])->name('project.index');
   Route::get('project/addProject',[ProjectController::class,'projectShow'])->name('project.so');
   Route::post('project/addProject',[ProjectController::class,'store'])->name('projects.store');
   Route::get('tasks/create',[TaskController::class,'create'])->name('task.create');

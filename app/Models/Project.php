@@ -15,4 +15,8 @@ class Project extends Model
         'owner_id',
         'status',
     ];
+
+    public function owner(){
+        return $this->belongsTo(User::class,'owner_id');
+    }
 }

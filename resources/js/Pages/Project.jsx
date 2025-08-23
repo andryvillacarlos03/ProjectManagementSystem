@@ -8,13 +8,14 @@ export default function Project({ projects }) {
   return (
     <AuthenticatedLayout>
       <Head title="Projects" />
-        <NavBar children={  <Link
+        <NavBar children={<Link
           href={route('project.so')}
           className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700"
+          
         >
           <PlusCircle size={16} className="mr-1" />
           Add Project
-        </Link>}/>
+        </Link>} routeName="project.index"/>
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-4">Projects</h2>
 
@@ -43,7 +44,7 @@ export default function Project({ projects }) {
                   <td className="px-4 py-3 border text-gray-600">
                     {project.description}
                   </td>
-                  <td className="px-4 py-3 border">{project.owner_id}</td>
+                  <td className="px-4 py-3 border">{project.owner?.name}</td>
                   <td
                     className={`px-4 py-3 border font-semibold ${
                       project.status === "completed"
