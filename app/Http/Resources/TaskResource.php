@@ -12,16 +12,27 @@ class TaskResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
-    {
-        return [
-            "id" => $this->id,
-            "project_id" => $this->project_id,
-            "assigned_to" => $this->assigned_to,
-            "title" => $this->title,
-            "description" => $this->description,
-            "status" => $this->status,
-            "due_date" => $this->due_date,
-        ];
-    }
+   public function toArray(Request $request): array
+{
+    return [
+        "id" => $this->id,
+        "title" => $this->title,
+        "description" => $this->description,
+        "status" => $this->status,
+        "due_date" => $this->due_date,
+        "assigned_to" => $this->whenLoaded('assignedUser', function () {
+            return [
+               "id" => $this->assignedUser->id,
+               "name" => $this->assignedUser->name,  
+            ];
+        }),
+        "project_id" => $this->whenLoaded('project', function () {
+            return [
+                'id' => $this->project->id,
+                'name' => $this->project->name,
+            ];
+        }),
+        "slug" => $this->slug,
+    ];
+}
 }

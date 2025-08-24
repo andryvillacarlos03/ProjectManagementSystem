@@ -18,10 +18,13 @@ class ProjectResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "owner" => [
-                "id" => $this->owner_id,
-                "name" => $this->owner->name,
-            ],
+            "slug" => $this->slug,
+            "owner_id" => $this->whenLoaded('assignOwner', function (){
+                return [
+                "id" => $this->assignOwner->id,
+                "name" => $this->assignOwner->name,
+                ];
+            }),
             "status" => $this->status
         ];
     }

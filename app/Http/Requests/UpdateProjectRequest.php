@@ -11,7 +11,7 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,21 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'owner_id' => 'required|exists:users,id',
+            'status' => 'required|in:pending,in_progress,completed',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Project name is required.',
+            'owner_id.required' => 'Please select an owner.',
+            'owner_id.exists' => 'Selected owner is invalid.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Status must be Pending, In Progress, or Completed.',
         ];
     }
 }

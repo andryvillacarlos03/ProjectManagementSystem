@@ -1,9 +1,8 @@
-import { usePage } from "@inertiajs/react";
+import { usePage, router } from "@inertiajs/react";
 import { Search, Filter, X, ArrowLeft } from "lucide-react";
-import { Inertia } from "@inertiajs/inertia";
 import { useState } from "react";
 
-export default function NavBar({ children,routeName}) {
+export default function NavBar({ children, routeName }) {
   const { filters } = usePage().props;
   const [search, setSearch] = useState(filters?.search || "");
   const [searched, setSearched] = useState(!!filters?.search);
@@ -12,7 +11,7 @@ export default function NavBar({ children,routeName}) {
   const handleSearch = (e) => {
     e.preventDefault();
     if (search.trim() === "") return;
-    Inertia.get(
+    router.get(
       route(routeName),
       { search },
       { preserveState: true, replace: true }
@@ -21,7 +20,7 @@ export default function NavBar({ children,routeName}) {
   };
 
   const handleSearchInProgress = (status) => {
-    Inertia.get(
+    router.get(
       route(routeName),
       { ...filters, status }, // ✅ keep search + status together
       { preserveState: true, replace: true }
@@ -30,16 +29,18 @@ export default function NavBar({ children,routeName}) {
 
   const clearSearch = () => {
     setSearch("");
-    Inertia.get(route(routeName), { status: filters?.status || "All" });
+    router.get(route(routeName), { status: filters?.status || "All" });
     setSearched(false);
   };
 
   const goBack = () => {
     setSearch("");
-    Inertia.get(route(routeName), { status: filters?.status || "All" });
+    router.get(route(routeName), { status: filters?.status || "All" });
     setSearched(false);
   };
-  
+
+
+
   return (
     <header className="bg-white shadow-md px-6 py-3 flex items-center justify-between">
       {/* Left: Search */}
@@ -107,7 +108,7 @@ export default function NavBar({ children,routeName}) {
               </ul>
             </div>
           )}
-        </div>  
+        </div>
         {children}
       </div>
     </header>

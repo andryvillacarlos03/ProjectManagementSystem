@@ -8,13 +8,14 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-  public function index(Request $request)
+public function index(Request $request)
  {
     $query = Project::query();
 
@@ -24,7 +25,7 @@ class ProjectController extends Controller
         $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
               ->orWhere('description', 'like', "%{$search}%")
-              ->orWhereHas('owner', function ($owner) use ($search) {
+              ->orWhereHas('assignOwner', function ($owner) use ($search) {
                   $owner->where('name', 'like', "%{$search}%"); // search user name
               });
         });
@@ -34,7 +35,7 @@ class ProjectController extends Controller
         $query->where('status',$request->status);
     }
     
-    $projects = $query->with('owner')
+    $projects = $query->with('assignOwner')
                       ->latest()
                       ->paginate(10)
                       ->withQueryString();
@@ -51,7 +52,7 @@ class ProjectController extends Controller
      */
     public function create()
     { 
-      $projects = Project::query()->with('owner')->paginate(10);
+      $projects = Project::query()->with('assignOwner')->paginate(10);
 
       return inertia('Project',[
         'projects' => ProjectResource::collection($projects)->response()->getData(true),
@@ -73,7 +74,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        
     }
 
     /**
@@ -81,7 +82,10 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return inertia('EditProject',[
+            'project' => $project,
+            'owners' => User::all(),
+        ]);
     }
 
     /**
@@ -89,7 +93,9 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $validated = $request->validated();
+        $projects = $project->update($validated);
+        return back()->with('success','Update Successfully');
     }
 
     /**
@@ -97,7 +103,12 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        try{
+         $project->delete();
+         return back()->with('success','Project Deleted Successfully');
+        }catch(QueryException $e){
+         return back()->with('error','Something was wrong');
+        }
     }
 
     public function projectShow(){

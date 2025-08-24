@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -31,7 +32,11 @@ public function index(Request $request)
           $query->where('status',$request->status);
        }
           
-       $tasks = $query->latest()->paginate(10)->withQueryString();
+      $tasks = $query->with(['assignedUser','project'])
+               ->latest()
+               ->paginate(10)
+               ->withQueryString();
+
        return Inertia('Task',[
         'tasks' => TaskResource::collection($tasks),
         'filters' => $request->only(['search','status']),
@@ -44,7 +49,7 @@ public function index(Request $request)
      */
     public function create()
     {   
-        $tasks = Task::query()->paginate(10)->onEachSide(1);
+        $tasks = Task::query()->with(['assignedUser','project'])->paginate(10)->onEachSide(1);
         return Inertia('Task',[
            "tasks" => TaskResource::collection($tasks),
         ]);
@@ -73,7 +78,11 @@ public function index(Request $request)
      */
     public function edit(Task $task)
     {
-        //
+        return inertia('TaskEdit',[
+            'task' => $task,
+            'users' => User::select('id','name')->get(),
+            'projects' => Project::select('id','name')->get(),
+        ]);
     }
 
     /**
@@ -81,7 +90,9 @@ public function index(Request $request)
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $validated = $request->validated();
+        $task->update($validated);
+        return back()->with('success','Successfully update!!');
     }
 
     /**
@@ -89,7 +100,12 @@ public function index(Request $request)
      */
     public function destroy(Task $task)
     {
-        //
+        try{
+          $task->delete();
+          return back()->with('sucess','Task deleted successfully');
+        }catch(QueryException $e){
+          return back()->with('error', $e);
+        }
     }
 
     public function addTaskShow(){

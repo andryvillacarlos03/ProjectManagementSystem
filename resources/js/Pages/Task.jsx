@@ -1,20 +1,32 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head,Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import NavBar from "@/Components/MyNav";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Trash2,Pencil } from "lucide-react";
+
 export default function Tasks({ tasks }) {
   const { data, meta } = tasks;
+
+  const handleDelete = (slug) => {
+    if (confirm("Are you sure you want to delete this task?")) {
+      router.delete(route("tasks.destroy", {task : slug}));
+    }
+  };
 
   return (
     <AuthenticatedLayout>
       <Head title="Tasks" />
-      <NavBar children={<Link
-                href={route('addTask.show')}
-                className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
-              >
-                <PlusCircle size={16} className="mr-1" />
-                Add Task
-              </Link>} routeName="tasks.index"/>
+      <NavBar
+        children={
+          <Link
+            href={route("addTask.show")}
+            className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
+          >
+            <PlusCircle size={16} className="mr-1" />
+            Add Task
+          </Link>
+        }
+        routeName="tasks.index"
+      />
       <div className="p-6">
         <h2 className="text-2xl font-bold mb-4">Tasks</h2>
 
@@ -30,6 +42,7 @@ export default function Tasks({ tasks }) {
                 <th className="px-4 py-3 border">Description</th>
                 <th className="px-4 py-3 border">Status</th>
                 <th className="px-4 py-3 border">Due Date</th>
+                <th className="px-4 py-3 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -39,8 +52,8 @@ export default function Tasks({ tasks }) {
                   className="bg-white hover:bg-gray-50 border-t"
                 >
                   <td className="px-4 py-3 border">{task.id}</td>
-                  <td className="px-4 py-3 border">{task.project_id}</td>
-                  <td className="px-4 py-3 border">{task.assigned_to}</td>
+                  <td className="px-4 py-3 border">{task.project_id.id}</td>
+                  <td className="px-4 py-3 border">{task.assigned_to.id}</td>
                   <td className="px-4 py-3 border font-medium">
                     {task.title}
                   </td>
@@ -59,6 +72,22 @@ export default function Tasks({ tasks }) {
                     {task.status}
                   </td>
                   <td className="px-4 py-3 border">{task.due_date}</td>
+                  <td className="px-4 py-3 border text-center">
+                      <Link
+                          href={route("tasks.edit", {task : task.slug})}
+                          className="flex items-center px-2 py-1 text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          <Pencil size={16} className="mr-1" />
+                          Edit
+                      </Link>
+                    <button
+                      onClick={() => handleDelete(task.slug)}
+                      className="flex items-center px-2 py-1 text-sm text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 size={16} className="mr-1" />
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
